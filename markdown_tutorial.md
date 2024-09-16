@@ -39,3 +39,11 @@ Ordered
 3. Item 3
 	* Item 3a
 	* Item 3b 
+
+
+## IMAGES
+
+![Funny cat picture](https://tr.rbxcdn.com/d68f390013d5df7da230af3c832c40b7/420/420/Hat/Webp)
+
+Format: \![Alt text](url)
+
