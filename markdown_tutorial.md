@@ -44,7 +44,6 @@ Ordered
 ## IMAGES
 
 ![Funny cat picture](https://tr.rbxcdn.com/d68f390013d5df7da230af3c832c40b7/420/420/Hat/Webp)
-![BGSA logo](C:\Users\michp\OneDrive\Pictures\BGSA_logo.tif)
 
 Format: \!\[Alt text\]\(url\)
 
@@ -57,3 +56,22 @@ http://brewerlab.net
 ## BACKSLASH ESCAPES
 
 \*Literal asterices\*
+
+## FENCED CODE BLOCKS
+
+* Generic Example
+
+```
+echo "Hello"
+```
+* Python Example
+
+```python
+print("Hello"
+```
+
+* R example
+
+```r
+x <- 4^2
+```
