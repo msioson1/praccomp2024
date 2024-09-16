@@ -44,6 +44,16 @@ Ordered
 ## IMAGES
 
 ![Funny cat picture](https://tr.rbxcdn.com/d68f390013d5df7da230af3c832c40b7/420/420/Hat/Webp)
+![BGSA logo](C:\Users\michp\OneDrive\Pictures\BGSA_logo.tif)
 
-Format: \![Alt text](url)
+Format: \!\[Alt text\]\(url\)
 
+## LINKS
+
+http://brewerlab.net
+
+[Brewer Lab](http://brewerlab.net)
+
+## BACKSLASH ESCAPES
+
+\*Literal asterices\*
