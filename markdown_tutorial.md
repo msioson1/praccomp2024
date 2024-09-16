@@ -18,6 +18,8 @@ __This text is also bolded__
 
 __You **can** combine them__
 
+~~This text is struckthrough~~
+
 ## BLOCKQUOTES
 
 _My poem_ by Michael Sioson
@@ -92,5 +94,5 @@ Content Column 1 | Content Column 2
 
 ## Emoji 
 
-:upside-down-face:
+:sunglasses:
 
