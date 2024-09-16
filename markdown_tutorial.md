@@ -17,3 +17,25 @@ _This text is italicized_
 __This text is also bolded__
 
 __You **can** combine them__
+
+## BLOCKQUOTES
+
+_My poem_ by Michael Sioson
+
+> I am a poet, \
+> and I don't know it.
+
+##LISTS
+
+Unordered
+* Item 1
+* Item 2
+	* Item 2a
+	* Item 2b
+
+Ordered
+1. Item 1
+2. Item 2
+3. Item 3
+	* Item 3a
+	* Item 3b 
