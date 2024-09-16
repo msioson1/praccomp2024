@@ -25,7 +25,7 @@ _My poem_ by Michael Sioson
 > I am a poet, \
 > and I don't know it.
 
-##LISTS
+## LISTS
 
 Unordered
 * Item 1
