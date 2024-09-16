@@ -67,7 +67,7 @@ echo "Hello"
 * Python Example
 
 ```python
-print("Hello"
+print("Hello")
 ```
 
 * R example
@@ -75,3 +75,22 @@ print("Hello"
 ```r
 x <- 4^2
 ```
+
+## TASK LISTS
+
+- [ ] This is an incomplete task
+- [x] This is a complete task
+- [x] @mentions, #refs, [links](), **formatting**, and <del>tags</del> supported
+- [x] List syntax required (any unordered or ordered list supported
+
+## TABLES
+
+First Header | Second Header
+------------ | -------------
+Content Cell 1 | Content Cell 2
+Content Column 1 | Content Column 2
+
+## Emoji 
+
+:upside-down-face:
+
