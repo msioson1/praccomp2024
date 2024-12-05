@@ -1,0 +1,15 @@
+---
+title: "PracCompFinalProjectReadMe_Sioson"
+author: "Michael Sioson"
+date: "2024-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Abstract
+
+Spartina alterniflora (smooth cordgrass) is a pioneer species with several important ecological functions in marsh habitats, making it a common planting for coastal marsh restorations. The germination rates of seeds and survivorship of S. alterniflora plantings are inconsistent, despite the species having high tolerances of salinity and wave energy. There is little existing research regarding the effects of abiotic stressors on the growth and survivorship of S. alterniflora plantings, and more research is needed to analyze the relationships between soil microbial communities and germination and survivorship of marsh grasses in the presence of abiotic stressors. I will measure survival, biomass, plant height, and stem count in seedlings planted in mesocosms with two levels of inundation (8 hours and regular watering), two levels of soil treatment (high organic matter and sandy), and three levels of microbial inoculation (no addition, sulfur oxidizing bacterial isolates, and marsh soil inocula). I will analyze this data by using the glm and dredge functions in r using the MuMIN package.
+
