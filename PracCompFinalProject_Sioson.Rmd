@@ -1,0 +1,383 @@
+---
+title: "PracCompFinalProject_Sioson"
+author: "Michael Sioson"
+date: "2024-12-05"
+output: html_document
+---
+
+# Graphical Abstract
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+#install.packages("MuMIn")
+library(MuMIn)
+```
+
+```{r}
+thesisdesign <- read.csv("thesis_design_pre.csv")
+thesisdesign$Addition <- factor(thesisdesign$Addition, 
+                                levels = c("No_Addition", "Sulfur_Oxidizers", "Community_Addition"))
+ggplot(thesisdesign, aes(x = Inundation, y = Plant_Biomass, fill = Soil)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ Addition) +
+  labs(
+    title = "Expected S. alternflora Biomass by Treatment",
+    x = "Inundation",
+    y = "Plant Biomass",
+    fill = "Soil"
+  ) +
+  scale_y_continuous(
+    breaks = range(thesisdesign$Plant_Biomass),  
+    labels = c("Low", "High")
+  ) +
+  scale_fill_manual(values = c("Organic_Soil" = "chartreuse4", 
+                               "Sandy_Soil " = "lightgoldenrod1")) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+# Spartina Data
+
+## Stem Height
+
+```{r}
+set.seed(29)
+spartinatest <- read.csv("Spartina_TestData.csv")
+spartinatest$Stem_Height_mm <- rnorm(120, mean = 370, sd = 158)
+
+ht_data <- spartinatest %>%
+  arrange(Stem_Height_mm) %>%
+  mutate(Group = ntile(Stem_Height_mm, 12)) %>%
+  
+  # Assign Inundated and Soil_Treatment
+  mutate(
+    Inundated = case_when(
+      Group %in% 1:6 ~ "Yes",
+      Group %in% 7:12 ~ "No"
+    ),
+    Soil_Treatment = case_when(
+      Group %in% c(1, 2, 3, 7, 8, 9) ~ "Organic",
+      Group %in% c(4, 5, 6, 10, 11, 12) ~ "Sand"
+    )
+  ) %>%
+  
+  # Assign exactly 10 of each Microbe_Treatment per group
+  group_by(Group) %>%
+  mutate(
+    Microbe_Treatment = case_when(
+      Group %in% c(1, 4, 7, 10) ~ "None", # Groups with fixed "None"
+      Group %in% c(2, 3) ~ rep(c("SOB", "Community"), times = 10)[row_number()],
+      Group %in% c(5, 8, 11) ~ "SOB",
+      Group %in% c(6, 9, 12) ~ "Community"
+    )
+  ) %>%
+  ungroup()
+
+
+ht_data <- ht_data %>% mutate(Stem_Height_mm = if_else(Stem_Height_mm < 105, NA, Stem_Height_mm)) 
+```
+
+```{r}
+ht_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  summarize(count = n(),
+            mean = mean(Stem_Height_mm),
+            sd = sd(Stem_Height_mm))
+
+ht_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  mutate(Microbe_Treatment = factor(Microbe_Treatment, levels = c("None", "SOB", "Community"))) %>%
+  mutate(Inundated = factor(Inundated, levels = c("Yes", "No"))) %>%
+  
+ggplot(aes(x = Inundated, y = Stem_Height_mm, fill = Soil_Treatment)) +
+  geom_violin(trim = FALSE, scale = "width") +
+  scale_color_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  scale_fill_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  facet_wrap(~ Microbe_Treatment) +
+  labs(
+    title = "Stem Height by Microbe Treatment and Inundation",
+    x = "Inundation",
+    y = "Stem Height (mm)",
+    fill = "Soil Treatment"
+  ) +
+  theme_light()
+
+```
+
+## Belowground Biomass
+
+```{r}
+set.seed(29)
+bg_data <- rnorm(120, mean = 0.7104, sd = 0.4) %>% sort()  # Generate and sort values
+
+bg_data <- ht_data %>%
+  mutate(
+    Belowground_biomass_g = {
+      group_order <- order(Group)  # Order plants by their Group
+      bg_data[group_order]         # Assign sorted biomass to plants by Group rank
+    },
+
+    Belowground_biomass_g = if_else(Belowground_biomass_g < 0.04, NA, Belowground_biomass_g)
+  )
+```
+
+```{r}
+bg_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  summarize(count = n(),
+            mean = mean(Belowground_biomass_g),
+            sd = sd(Belowground_biomass_g))
+
+bg_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  mutate(Microbe_Treatment = factor(Microbe_Treatment, levels = c("None", "SOB", "Community"))) %>%
+  mutate(Inundated = factor(Inundated, levels = c("Yes", "No"))) %>% 
+  
+ggplot(aes(x = Inundated, y = Belowground_biomass_g, fill = Soil_Treatment)) +
+  geom_violin(trim = FALSE, scale = "width") +
+  scale_color_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  scale_fill_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  facet_wrap(~ Microbe_Treatment) +
+  labs(
+    title = "Belowground Biomass by Microbe Treatment and Inundation",
+    x = "Inundation",
+    y = "Belowground Biomass (g)",
+    fill = "Soil Treatment"
+  ) +
+  theme_light()
+```
+
+## Aboveground Biomass
+
+```{r}
+set.seed(29)
+ag_data <- rnorm(120, mean = 2.146, sd = 1.3) %>% sort()
+ag_data <- bg_data %>%
+  
+  mutate(
+    Aboveground_biomass_g = {
+      group_order <- order(Group)  
+      ag_data[group_order]         
+    },
+
+    Aboveground_biomass_g = if_else(Aboveground_biomass_g < 0, NA, Aboveground_biomass_g)
+  )
+```
+```
+
+```{r}
+ag_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  summarize(count = n(),
+            mean = mean(Aboveground_biomass_g),
+            sd = sd(Aboveground_biomass_g))
+
+ag_data %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  mutate(Microbe_Treatment = factor(Microbe_Treatment, levels = c("None", "SOB", "Community"))) %>%
+  mutate(Inundated = factor(Inundated, levels = c("Yes", "No"))) %>%
+  
+ggplot(aes(x = Inundated, y = Aboveground_biomass_g, fill = Soil_Treatment)) +
+  geom_violin(trim = FALSE, scale = "width") +
+  scale_color_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  scale_fill_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  facet_wrap(~ Microbe_Treatment) +
+  labs(
+    title = "Aboveground Biomass by Microbe Treatment and Inundation",
+    x = "Inundation",
+    y = "Aboveground Biomass (g)",
+    fill = "Soil Treatment"
+  ) +
+  theme_light()
+```
+
+## Total Biomass
+
+```{r}
+sp_data_final <- ag_data %>%
+  mutate(Total_biomass_g = Belowground_biomass_g + Aboveground_biomass_g)
+```
+
+```{r}
+sp_data_final %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  summarize(count = n(),
+            mean = mean(Total_biomass_g),
+            sd = sd(Total_biomass_g))
+
+sp_data_final %>%
+  filter(!is.na(Stem_Height_mm)) %>%
+  group_by(Inundated, Soil_Treatment, Microbe_Treatment) %>%
+  mutate(Microbe_Treatment = factor(Microbe_Treatment, levels = c("None", "SOB", "Community"))) %>%
+  mutate(Inundated = factor(Inundated, levels = c("Yes", "No"))) %>%
+  
+ggplot(aes(x = Inundated, y = Total_biomass_g, fill = Soil_Treatment)) +
+  geom_violin(trim = FALSE, scale = "width") +
+  scale_color_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  scale_fill_manual(values = c("Organic" = "chartreuse4", "Sand" = "lightgoldenrod1")) +
+  facet_wrap(~ Microbe_Treatment) +
+  labs(
+    title = "Total Biomass by Microbe Treatment and Inundation",
+    x = "Inundation",
+    y = "Total Biomass (g)",
+    fill = "Soil Treatment"
+  ) +
+  theme_light()
+```
+
+# Generalized Linear Models
+
+## Stem Height
+
+```{r}
+sp_data_final <- sp_data_final %>%
+ filter(!is.na(Stem_Height_mm), 
+         !is.na(Inundated), 
+         !is.na(Soil_Treatment), 
+         !is.na(Microbe_Treatment)) %>% 
+  mutate(
+    Inundated = as.factor(Inundated),
+    Soil_Treatment = as.factor(Soil_Treatment),
+    Microbe_Treatment = as.factor(Microbe_Treatment)
+  )
+
+# Fit GLM for Stem_Height_mm
+stem_model <- glm(
+  Stem_Height_mm ~ Inundated + Soil_Treatment + Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+# Display summary of the model
+summary(stem_model)
+```
+
+## Belowground Biomass
+
+```{r}
+bg_model <- glm(
+  Belowground_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+# Display summary of the model
+summary(bg_model)
+```
+
+## Aboveground Biomass
+
+```{r}
+ag_model <- glm(
+  Aboveground_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+# Display summary of the model
+summary(ag_model)
+```
+
+## Total Biomass
+
+```{r}
+biomass_model <- glm(
+  Total_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+# Display summary of the model
+summary(biomass_model)
+```
+
+# Dredge 
+
+## Stem Height
+
+```{r}
+sp_data_final <- na.omit(sp_data_final) # Removes rows with NAs
+
+globalht_model <- glm(
+  Stem_Height_mm ~ Inundated + Soil_Treatment + Microbe_Treatment + 
+    Inundated:Soil_Treatment + Inundated:Microbe_Treatment + Soil_Treatment:Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+options(na.action = "na.fail")
+model_set <- dredge(globalht_model)
+
+print(model_set)
+```
+
+## Belowground Biomass
+
+```{r}
+sp_data_final <- na.omit(sp_data_final) # Removes rows with NAs
+
+globalbm_model <- glm(
+  Belowground_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment + 
+    Inundated:Soil_Treatment + Inundated:Microbe_Treatment + Soil_Treatment:Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+options(na.action = "na.fail")
+model_set <- dredge(globalbm_model)
+
+print(model_set)
+```
+
+## Aboveground Biomass
+
+```{r}
+sp_data_final <- na.omit(sp_data_final) # Removes rows with NAs
+
+globalbm_model <- glm(
+  Aboveground_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment + 
+    Inundated:Soil_Treatment + Inundated:Microbe_Treatment + Soil_Treatment:Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+options(na.action = "na.fail")
+model_set <- dredge(globalbm_model)
+
+print(model_set)
+```
+
+## Total Biomass
+
+```{r}
+sp_data_final <- na.omit(sp_data_final) # Removes rows with NAs
+
+globalbm_model <- glm(
+  Total_biomass_g ~ Inundated + Soil_Treatment + Microbe_Treatment + 
+    Inundated:Soil_Treatment + Inundated:Microbe_Treatment + Soil_Treatment:Microbe_Treatment,
+  family = gaussian(link = "identity"),
+  data = sp_data_final
+)
+
+options(na.action = "na.fail")
+model_set <- dredge(globalbm_model)
+
+print(model_set)
+```
+
+
+```{r}
+best_model <- get.models(model_set, subset = 1)[[1]]
+summary(best_model) # Summary of the best model
+```
+

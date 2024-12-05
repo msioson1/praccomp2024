@@ -1,0 +1,13 @@
+Addition,Inundation,Soil,Plant_Biomass
+No_Addition,Un-inundated,Sandy_Soil ,1
+Sulfur_Oxidizers,Un-inundated,Sandy_Soil ,2
+Community_Addition,Un-inundated,Sandy_Soil ,3
+No_Addition,Un-inundated,Organic_Soil,-1
+Sulfur_Oxidizers,Un-inundated,Organic_Soil,0.5
+Community_Addition,Un-inundated,Organic_Soil,1
+No_Addition,Inundated,Sandy_Soil ,-1
+Sulfur_Oxidizers,Inundated,Sandy_Soil ,1
+Community_Addition,Inundated,Sandy_Soil ,1
+No_Addition,Inundated,Organic_Soil,-3
+Sulfur_Oxidizers,Inundated,Organic_Soil,-1
+Community_Addition,Inundated,Organic_Soil,-1
